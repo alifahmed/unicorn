@@ -26,79 +26,73 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
         initialized = 1;
     }
 
-    // Not global as we must reset this structure
-    // Initialize emulator in supplied mode
-    err = uc_open(UC_ARCH_X86, UC_MODE_64, &uc);
-    if (err != UC_ERR_OK) {
-        printf("Failed on uc_open() with error returned: %u\n", err);
-        abort();
-    }
+	err = uc_open(UC_ARCH_ARM64, UC_MODE_ARM + UC_MODE_BIG_ENDIAN, &uc);
+	if (err == UC_ERR_OK) {
+    	// map 4MB memory for this emulation
+		uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
+		// write machine code to be emulated to memory
+		if (uc_mem_write(uc, ADDRESS, Data, Size) == 0) {
+			// emulate code in infinite time & 4096 instructions
+			// avoid timeouts with infinite loops
+			uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
+		}
+		uc_close(uc);
+	}
 
-    // map 4MB memory for this emulation
-    uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
 
-    // write machine code to be emulated to memory
-    if (uc_mem_write(uc, ADDRESS, Data, Size)) {
-        printf("Failed to write emulation code to memory, quit!\n");
-        abort();
-    }
+	err = uc_open(UC_ARCH_ARM, UC_MODE_ARM, &uc);
+	if (err == UC_ERR_OK) {
+    	// map 4MB memory for this emulation
+		uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
+		// write machine code to be emulated to memory
+		if (uc_mem_write(uc, ADDRESS, Data, Size) == 0) {
+			// emulate code in infinite time & 4096 instructions
+			// avoid timeouts with infinite loops
+			uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
+		}
+		uc_close(uc);
+	}
 
-    // emulate code in infinite time & 4096 instructions
-    // avoid timeouts with infinite loops
-    err=uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
-    if (err) {
-        fprintf(outfile, "Failed on uc_emu_start() with error returned %u: %s\n", err, uc_strerror(err));
-    }
-
-    uc_close(uc);
-
-    err = uc_open(UC_ARCH_ARM64, UC_MODE_ARM, &uc);
-    if (err != UC_ERR_OK) {
-        printf("Failed on uc_open() with error returned: %u\n", err);
-        abort();
-    }
-
-    // map 4MB memory for this emulation
-    uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
-
-    // write machine code to be emulated to memory
-    if (uc_mem_write(uc, ADDRESS, Data, Size)) {
-        printf("Failed to write emulation code to memory, quit!\n");
-        abort();
-    }
-
-    // emulate code in infinite time & 4096 instructions
-    // avoid timeouts with infinite loops
-    err=uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
-    if (err) {
-        fprintf(outfile, "Failed on uc_emu_start() with error returned %u: %s\n", err, uc_strerror(err));
-    }
-
-    uc_close(uc);
 
 	err = uc_open(UC_ARCH_MIPS, UC_MODE_MIPS32 + UC_MODE_LITTLE_ENDIAN, &uc);
-    if (err != UC_ERR_OK) {
-        printf("Failed on uc_open() with error returned: %u\n", err);
-        abort();
-    }
+	if (err == UC_ERR_OK) {
+    	// map 4MB memory for this emulation
+		uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
+		// write machine code to be emulated to memory
+		if (uc_mem_write(uc, ADDRESS, Data, Size) == 0) {
+			// emulate code in infinite time & 4096 instructions
+			// avoid timeouts with infinite loops
+			uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
+		}
+		uc_close(uc);
+	}
 
-    // map 4MB memory for this emulation
-    uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
 
-    // write machine code to be emulated to memory
-    if (uc_mem_write(uc, ADDRESS, Data, Size)) {
-        printf("Failed to write emulation code to memory, quit!\n");
-        abort();
-    }
+	err = uc_open(UC_ARCH_SPARC, UC_MODE_SPARC32|UC_MODE_BIG_ENDIAN, &uc);
+	if (err == UC_ERR_OK) {
+    	// map 4MB memory for this emulation
+		uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
+		// write machine code to be emulated to memory
+		if (uc_mem_write(uc, ADDRESS, Data, Size) == 0) {
+			// emulate code in infinite time & 4096 instructions
+			// avoid timeouts with infinite loops
+			uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
+		}
+		uc_close(uc);
+	}
 
-    // emulate code in infinite time & 4096 instructions
-    // avoid timeouts with infinite loops
-    err=uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
-    if (err) {
-        fprintf(outfile, "Failed on uc_emu_start() with error returned %u: %s\n", err, uc_strerror(err));
-    }
-
-    uc_close(uc);
+	err = uc_open(UC_ARCH_X86, UC_MODE_64, &uc);
+    	if (err == UC_ERR_OK) {
+    	// map 4MB memory for this emulation
+		uc_mem_map(uc, ADDRESS, 4 * 1024 * 1024, UC_PROT_ALL);
+		// write machine code to be emulated to memory
+		if (uc_mem_write(uc, ADDRESS, Data, Size) == 0) {
+			// emulate code in infinite time & 4096 instructions
+			// avoid timeouts with infinite loops
+			uc_emu_start(uc, ADDRESS, ADDRESS + Size, 0, 0x1000);
+		}
+		uc_close(uc);
+	}
 
     return 0;
 }
